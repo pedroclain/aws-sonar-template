@@ -1,10 +1,25 @@
-name: hello-world
-run-name: ${{ github.actor }} is saying Hello World
+name: Sonar analizer
+run-name: Sonar analizer
 on: [push]
 jobs:
-  check-secret:
+  build:
+    name: Build and analyze
     runs-on: ubuntu-latest
     steps:
-      - uses: s4u/setup-maven-action@v1.12.0
-      - run: mvn clean package
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn clean install
             
