@@ -2,8 +2,11 @@ name: hello-world
 run-name: ${{ github.actor }} is saying Hello World
 on: [push]
 jobs:
-  check-bats-version:
+  check-secret:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Hello world from Github Workflow"
-      - run: bats -v
+      - name: Retrieve secret
+        env:
+          MY_SECRET: ${{ secrets.MY_SECRET }}
+        run: |
+          echo $MY_SECRET
