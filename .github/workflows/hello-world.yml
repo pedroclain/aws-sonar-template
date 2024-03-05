@@ -3,6 +3,7 @@ run-name: ${{ github.actor }} is saying Hello World
 on: [push]
 jobs:
   check-secret:
+    environment: hello-world
     runs-on: ubuntu-latest
     steps:
       - name: Retrieve secret
