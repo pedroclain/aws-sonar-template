@@ -1,0 +1,56 @@
+name: Analize and Deploy
+run-name: Analize and Deploy
+on: [push]
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4.1.0
+        with:
+          java-version: 17
+          distribution: 'zulu'
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn clean install
+      - name: Upload target
+        uses: actions/upload-artifact@master
+        with:
+          name: target
+          path: target/
+  deploy:
+    needs: build
+    name: AWS deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download target
+        uses: actions/download-artifact@master
+        with:
+          name: target
+          path: target/
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+      - name: Push jar to Bucket
+        run: aws deploy push --application-name pedro-clain-personal-projects-app --s3-location s3://pedro-clain-personal-projects-bucket/aws-sonar-template.zip --source .
+      - name: Deploy from Bucket
+        run: aws deploy create-deployment --application-name pedro-clain-personal-projects-app --deployment-group-name pedro-clain-personal-projects-deployment-group --s3-location bucket=pedro-clain-personal-projects-bucket,key=aws-sonar-template.zip,bundleType=zip

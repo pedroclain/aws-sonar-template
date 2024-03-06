@@ -1,3 +1,2 @@
 #!/bin/bash
-sudo systemctl stop app-1
-sudo systemctl stop app-2
+sudo systemctl stop aws-sonar-template-app

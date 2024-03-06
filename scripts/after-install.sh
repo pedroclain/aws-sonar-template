@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo chmod +x /opt/projeto-base-spring-boot.jar
+sudo chmod +x /opt/aws-sonar-template.jar

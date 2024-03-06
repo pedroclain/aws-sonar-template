@@ -9,11 +9,10 @@
     <version>2.5.5</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
-  <groupId>com.unirio.pm</groupId>
-  <artifactId>projeto-base-spring</artifactId>
+  <groupId>com.pedroclain.projects</groupId>
+  <artifactId>aws-sonar-template</artifactId>
   <version>1.0</version>
-  <name>Projeto Base Spring</name>
-  <description>Template de projeto com Spring Boot, integrado com SonarCloud e AWS EC2</description>
+  <name>AWS and Sonar template with Sprint boot</name>
 
   <properties>
     <sonar.organization>pedro-clain</sonar.organization>
@@ -40,6 +39,7 @@
   </dependencies>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
